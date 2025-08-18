@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mini Test Italiano</title>
+<link rel="icon" href="icon.png" type="image/png" />
+<style>
+/* ===== Визуал как в рабочей версии ===== */
+body {
+font-family: sans-serif;
+margin: 0; padding: 0;
+min-height: 100vh;
+display: flex; justify-content: center; align-items: flex-start;
+background: linear-gradient(to right, #b0e0a8, #ffffff, #f4b0b0); /* пастельные цвета итальянского флага, горизонтально */
+}
+.container {
+position: relative;
+z-index: 2;
+max-width: 800px; width: 100%;
+margin: 20px;
+background: #fff; border-radius: 12px;
+padding: 25px 20px;
+box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+h2 { text-align: center; color: #4a4a4a; margin: 0 0 10px; }
+h3 { margin-top: 10px; color: #4a4a4a; }
+
+button, .option {
+display: block;
+width: 100%;
+padding: 12px 15px;
+margin: 8px 0;
+border: none; border-radius: 8px;
+cursor: pointer;
+font-size: 1rem;
+transition: all 0.25s ease;
+}
+.category-btn { background: #d4e2f4; color: #333; }
+.category-btn:hover { background: #a8c8ea; }
+.card-btn { background: #d4f4e2; color: #333; }
+.card-btn:hover { background: #a8eac8; }
+.option { background: #f0f0f0; color: #333; }
+.option:hover { background: #e3e3e3; }
+.correct { background: #6cc37e !important; color: #fff; }
+.wrong { background: #e46b6b !important; color: #fff; }
+#again, .nav-btn {
+background: #4a90e2; color: #fff; font-weight: 600;
+}
+#again:hover, .nav-btn:hover { background: #357abd; }
+#question { font-weight: 700; font-size: 1.1rem; margin-bottom: 15px; }
+#progress, #vocabProgress { margin-bottom: 12px; font-size: 0.95rem; color: #666; text-align: right; }
+
+/* Флеш-карточка для Vocabolario */
+#dictArea { display: none; }
+.vocab-card {
+width: 100%; max-width: 520px; height: 180px;
+margin: 16px auto;
+perspective: 1000px;
+}
+.vocab-inner {
+position: relative; width: 100%; height: 100%;
+transition: transform 0.6s; transform-style: preserve-3d;
+cursor: pointer;
+}
+.vocab-card.flipped .vocab-inner { transform: rotateY(180deg); }
+.vocab-face {
+position: absolute; inset: 0;
+display: flex; align-items: center; justify-content: center;
+font-size: 1.6rem; font-weight: 700; color: #333;
+background: #f8f8f8; border: 2px solid #4a90e2; border-radius: 10px;
+backface-visibility: hidden;
+}
+.vocab-back { transform: rotateY(180deg); }
+.vocab-controls {
+max-width: 520px; margin: 0 auto; display: grid; gap: 8px;
+grid-template-columns: 1fr 1fr 1fr;
+}
+
+/* Декоративные «достопримечательности» внизу */
+#landmarks { position: fixed; left:0; right:0; bottom:0; height:110px; z-index:1; pointer-events:none; }
+#landmarks svg { width:100%; height:100%; fill: rgba(0,0,0,0.12); }
+</style>
+</head>
+<body>
+<div class="container">
+<h2>Mini Test Italiano</h2>
+
+<!-- Меню категорий -->
+<div id="menu">
+<h3>Seleziona la categoria:</h3>
+<div id="categories"></div>
+</div>
+
+<!-- Подменю выбора карточки -->
+<div id="subMenu" style="display:none;">
+<h3>Seleziona la scheda:</h3>
+<div id="cards"></div>
+<button class="nav-btn" onclick="showMenu()">Torna al menu</button>
+</div>
+
+<!-- Область тестов (варианты ответов) -->
+<div id="testArea" style="display:none;">
+<div id="progress"></div>
+<p id="question"></p>
+<div id="options"></div>
+<p id="result"></p>
+<button id="again" class="nav-btn" onclick="showMenu()">Scegli un altro test</button>
+</div>
+
+<!-- Область словаря (флеш-карточки) -->
+<div id="dictArea">
+<div id="vocabProgress"></div>
+<div class="vocab-card" id="vocabCard">
+<div class="vocab-inner" id="vocabInner">
+<div class="vocab-face vocab-front" id="vocabFront">parola</div>
+<div class="vocab-face vocab-back" id="vocabBack">traduzione</div>
+</div>
+</div>
+<div class="vocab-controls">
+<button class="nav-btn" id="flipBtn" onclick="flipVocab()">Mostra traduzione</button>
+<button class="nav-btn" id="nextBtn" onclick="nextVocab()">Avanti</button>
+<button class="nav-btn" onclick="backToCards()">Torna alle schede</button>
+</div>
+</div>
+</div>
+
+<!-- Низ страницы: стилизованные «очертания» -->
+<div id="landmarks">
+<svg viewBox="0 0 1000 120" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+<path d="M40,100 L60,40 L80,100 Z" />
+<path d="M140,100 L160,55 L180,100 Z" />
+<path d="M240,100 L250,60 L260,100 Z" />
+<path d="M340,100 L355,50 L370,100 Z" />
+<path d="M440,100 L455,60 L470,100 Z" />
+<path d="M540,100 L555,40 L570,100 Z" />
+<path d="M640,100 L655,70 L670,100 Z" />
+<path d="M740,100 L755,55 L770,100 Z" />
+<path d="M840,100 L855,65 L870,100 Z" />
+<path d="M940,100 L955,45 L970,100 Z" />
+</svg>
+</div>
+
+<script>
+/* ========= УТИЛИТЫ ========= */
+function shuffle(array){
+for(let i=array.length-1;i>0;i--){
+const j=Math.floor(Math.random()*(i+1));
+[array[i],array[j]]=[array[j],array[i]];
+}
+return array;
+}
+
+/* ========= ДАННЫЕ ТЕСТОВ ========= */
+const tests = {
+"Verbi": {
+"Scheda 1": [
+{q:"Io ___ italiano.", options:["parlo","parla","parli"], a:"parlo"},
+{q:"Tu ___ a scuola.", options:["vai","va","andiamo"], a:"vai"},
+{q:"Lui ___ un libro.", options:["legge","leggo","leggono"], a:"legge"},
+{q:"Noi ___ musica.", options:["ascoltiamo","ascoltano","ascolto"], a:"ascoltiamo"},
+{q:"Voi ___ la cena.", options:["mangiate","mangiano","mangio"], a:"mangiate"},
+{q:"Loro ___ al parco.", options:["vanno","va","andate"], a:"vanno"},
+{q:"Io ___ un caffè.", options:["prendo","prende","prendiamo"], a:"prendo"},
+{q:"Tu ___ la macchina.", options:["guidi","guida","guidiamo"], a:"guidi"}
+],
+"Scheda 2": [
+{q:"Lei ___ al lavoro.", options:["va","vanno","vai"], a:"va"},
+{q:"Noi ___ un film.", options:["vediamo","vedono","vede"], a:"vediamo"},
+{q:"Voi ___ la verità.", options:["sapete","sa","sanno"], a:"sapete"},
+{q:"Loro ___ felici.", options:["sono","sei","siamo"], a:"sono"},
+{q:"Io ___ un messaggio.", options:["scrivo","scrive","scriviamo"], a:"scrivo"},
+{q:"Tu ___ la risposta.", options:["sai","sa","sappiamo"], a:"sai"},
+{q:"Lui ___ piano.", options:["cammina","cammino","camminano"], a:"cammina"},
+{q:"Noi ___ in giardino.", options:["giochiamo","giocano","gioca"], a:"giochiamo"}
+],
+"Scheda 3": [
+{q:"Voi ___ la porta.", options:["aprite","apre","apro"], a:"aprite"},
+{q:"Loro ___ le lettere.", options:["scrivono","scrive","scriviamo"], a:"scrivono"},
+{q:"Io ___ con il cane.", options:["gioco","gioca","giochiamo"], a:"gioco"},
+{q:"Tu ___ la lezione.", options:["capisci","capisce","capite"], a:"capisci"},
+{q:"Lei ___ un film.", options:["guarda","guardiamo","guardano"], a:"guarda"},
+{q:"Noi ___ al mercato.", options:["andiamo","va","vanno"], a:"andiamo"},
+{q:"Voi ___ in macchina.", options:["guidate","guida","guidiamo"], a:"guidate"},
+{q:"Loro ___ a casa.", options:["tornano","torna","torniamo"], a:"tornano"}
+],
+/* Новая Scheda 4 — только Presente */
+"Scheda 4": [
+{q:"Io ___ (dovere).", options:["devo","deve","devono"], a:"devo"},
+{q:"Tu ___ (volere).", options:["vuoi","voglio","vuole"], a:"vuoi"},
+{q:"Lui ___ (uscire).", options:["esce","esco","uscite"], a:"esce"},
+{q:"Noi ___ (andare).", options:["andiamo","vado","vanno"], a:"andiamo"},
+{q:"Voi ___ (dare).", options:["date","do","danno"], a:"date"},
+{q:"Io ___ (tenere).", options:["tengo","tieni","tiene"], a:"tengo"},
+{q:"Tu ___ (salire).", options:["sali","salgo","sale"], a:"sali"},
+{q:"Loro ___ (scendere).", options:["scendono","scende","scendo"], a:"scendono"}
+]
+},
+
+"Preposizioni": {
+"Scheda 1": [
+{q:"Vado ___ scuola.", options:["a","in","di"], a:"a"},
+{q:"Abito ___ Italia.", options:["in","a","su"], a:"in"},
+{q:"Parto ___ Roma.", options:["per","da","in"], a:"per"},
+{q:"Metto il libro ___ tavolo.", options:["sul","al","in"], a:"sul"},
+{q:"Vengo ___ ufficio.", options:["in","a","da"], a:"in"},
+{q:"Il gatto è ___ divano.", options:["sul","sulla","sullo"], a:"sul"},
+{q:"Vado ___ letto.", options:["a","in","al"], a:"a"},
+{q:"Abito ___ centro città.", options:["in","a","su"], a:"in"}
+],
+"Scheda 2": [
+{q:"Il quadro è appeso ___ muro.", options:["al","sul","in"], a:"al"},
+{q:"Metto le chiavi ___ tasca.", options:["in","a","su"], a:"in"},
+{q:"Andiamo ___ cinema.", options:["al","in","a"], a:"al"},
+{q:"Il regalo è ___ pacco.", options:["nel","sul","al"], a:"nel"},
+{q:"Scrivo ___ amico.", options:["a","in","da"], a:"a"},
+{q:"Sono ___ ufficio.", options:["in","a","da"], a:"in"},
+{q:"Il cane corre ___ giardino.", options:["nel","sul","al"], a:"nel"},
+{q:"Metto il cappello ___ testa.", options:["sulla","sul","al"], a:"sulla"}
+],
+"Scheda 3": [
+{q:"Vado ___ supermercato.", options:["al","in","a"], a:"al"},
+{q:"Il libro è ___ scaffale.", options:["sul","sullo","in"], a:"sul"},
+{q:"L'acqua è ___ bottiglia.", options:["nella","sulla","al"], a:"nella"},
+{q:"Lui vive ___ Roma.", options:["a","in","da"], a:"a"},
+{q:"Cammino ___ parco.", options:["nel","al","in"], a:"nel"},
+{q:"Il regalo è ___ tavolo.", options:["sul","al","in"], a:"sul"},
+{q:"Metto il cappotto ___ appendino.", options:["sull'","sul","al"], a:"sull'"},
+{q:"Vado ___ letto.", options:["a","in","al"], a:"a"}
+]
+},
+
+"Articoli": {
+"Scheda 1": [
+{q:"___ libro è interessante.", options:["Il","Lo","La"], a:"Il"},
+{q:"___ casa è grande.", options:["La","Il","Lo"], a:"La"},
+{q:"___ amici sono simpatici.", options:["Gli","I","Le"], a:"Gli"},
+{q:"___ mela è rossa.", options:["La","Il","Lo"], a:"La"},
+{q:"___ orologio è nuovo.", options:["L'","Il","Lo"], a:"L'"},
+{q:"___ finestre sono pulite.", options:["Le","I","Gli"], a:"Le"},
+{q:"___ zaino è pesante.", options:["Lo","Il","La"], a:"Lo"},
+{q:"___ studente studia.", options:["Lo","Il","La"], a:"Lo"}
+],
+"Scheda 2": [
+{q:"___ ragazze cantano.", options:["Le","Gli","I"], a:"Le"},
+{q:"___ alberi sono alti.", options:["Gli","I","Le"], a:"Gli"},
+{q:"___ cane dorme.", options:["Il","Lo","La"], a:"Il"},
+{q:"___ acqua è fresca.", options:["L'","Il","La"], a:"L'"},
+{q:"___ uomini parlano.", options:["Gli","I","Le"], a:"Gli"},
+{q:"___ scuola è vicina.", options:["La","Il","Lo"], a:"La"},
+{q:"___ film è interessante.", options:["Il","Lo","La"], a:"Il"},
+{q:"___ amici sono felici.", options:["Gli","I","Le"], a:"Gli"}
+],
+"Scheda 3": [
+{q:"___ casa è piccola.", options:["La","Il","Lo"], a:"La"},
+{q:"___ insegnante arriva.", options:["L'","Il","Lo"], a:"L'"},
+{q:"___ libri sono nuovi.", options:["I","Gli","Le"], a:"I"},
+{q:"___ finestre sono aperte.", options:["Le","Gli","I"], a:"Le"},
+{q:"___ ragazzo legge.", options:["Il","Lo","La"], a:"Il"},
+{q:"___ penne sono sul tavolo.", options:["Le","Gli","I"], a:"Le"},
+{q:"___ alberi crescono.", options:["Gli","I","Le"], a:"Gli"},
+{q:"___ macchina è rossa.", options:["La","Il","Lo"], a:"La"}
+]
+},
+
+/* ===== Новая категория: Vocabolario (флеш-карточки) ===== */
+"Vocabolario": {
+"Scheda 1": [
+{it:"mela",ru:"яблоко"},{it:"pera",ru:"груша"},{it:"banana",ru:"банан"},{it:"arancia",ru:"апельсин"},{it:"mandarino",ru:"мандари́н"},
+{it:"limone",ru:"лимон"},{it:"uva",ru:"виноград"},{it:"ciliegia",ru:"вишня"},{it:"fragola",ru:"клубника"},{it:"pesca",ru:"персик"},
+{it:"albicocca",ru:"абрикос"},{it:"melone",ru:"дыня"},{it:"anguria",ru:"арбуз"},{it:"kiwi",ru:"киви"},{it:"ananas",ru:"ананас"},
+{it:"mirtillo",ru:"черника"},{it:"lampone",ru:"малина"},{it:"susina",ru:"слива"},{it:"fico",ru:"инжир"},{it:"melograno",ru:"гранат"},
+
+{it:"pomodoro",ru:"помидор"},{it:"cetriolo",ru:"огурец"},{it:"carota",ru:"морковь"},{it:"cipolla",ru:"лук"},{it:"aglio",ru:"чеснок"},
+{it:"patata",ru:"картофель"},{it:"peperone",ru:"перец"},{it:"melanzana",ru:"баклажан"},{it:"zucchina",ru:"кабачок"},{it:"zucca",ru:"тыква"},
+{it:"broccolo",ru:"брокколи"},{it:"cavolfiore",ru:"цветная капуста"},{it:"cavolo",ru:"капуста"},{it:"lattuga",ru:"латук (салат)"},{it:"spinaci",ru:"шпинат"},
+{it:"bietola",ru:"свёкла"},{it:"ravanello",ru:"редис"},{it:"sedano",ru:"сельдерей"},{it:"asparago",ru:"спаржа"},{it:"carciofo",ru:"артишок"},
+{it:"fagiolo",ru:"фасоль"},{it:"pisello",ru:"горох"},{it:"lenticchia",ru:"чечевица"},{it:"ceci",ru:"нут"},{it:"mais",ru:"кукуруза"},
+{it:"rapa",ru:"репа"},{it:"funghi",ru:"грибы"},{it:"erba cipollina",ru:"лук зелёный"},{it:"prezzemolo",ru:"петрушка"},{it:"basilico",ru:"базилик"}
+]
+}
+};
+
+/* ========= СОСТОЯНИЕ ========= */
+let currentCategory = null;
+let questions = [];
+let current = 0;
+let score = 0;
+
+/* Для словаря */
+let vocabList = [];
+let vocabIndex = 0;
+let vocabFlipped = false;
+
+/* ========= ПЕРЕКЛЮЧЕНИЯ ЭКРАНОВ ========= */
+function showMenu(){
+document.getElementById("menu").style.display = "block";
+document.getElementById("subMenu").style.display = "none";
+document.getElementById("testArea").style.display = "none";
+document.getElementById("dictArea").style.display = "none";
+document.getElementById("again").style.display = "none";
+}
+
+function selectCategory(cat){
+currentCategory = cat;
+const cardsDiv = document.getElementById("cards");
+cardsDiv.innerHTML = "";
+Object.keys(tests[cat]).forEach(card=>{
+const btn = document.createElement("button");
+btn.textContent = card;
+btn.className = "card-btn";
+btn.onclick = ()=>selectCard(cat, card);
+cardsDiv.appendChild(btn);
+});
+document.getElementById("menu").style.display = "none";
+document.getElementById("subMenu").style.display = "block";
+}
+
+function backToCards(){
+/* Возврат из словаря к выбору «Scheda» */
+document.getElementById("dictArea").style.display = "none";
+document.getElementById("subMenu").style.display = "block";
+}
+
+/* ========= ЗАПУСК ВЫБРАННОЙ СХЕДЫ ========= */
+function selectCard(cat, card){
+if(cat === "Vocabolario"){
+startVocab(tests["Vocabolario"][card]);
+return;
+}
+questions = tests[cat][card];
+current = 0; score = 0;
+document.getElementById("subMenu").style.display = "none";
+document.getElementById("testArea").style.display = "block";
+showQuestion();
+}
+
+/* ========= ТЕСТЫ (MCQ) ========= */
+function showQuestion(){
+const q = questions[current];
+document.getElementById("question").textContent = q.q;
+document.getElementById("progress").textContent = `Domanda ${current+1} di ${questions.length}`;
+const optionsDiv = document.getElementById("options");
+optionsDiv.innerHTML = "";
+shuffle([...q.options]).forEach(opt=>{
+const btn = document.createElement("button");
+btn.textContent = opt;
+btn.className = "option";
+btn.onclick = ()=>checkAnswer(opt, q.a);
+optionsDiv.appendChild(btn);
+});
+document.getElementById("result").textContent = "";
+}
+
+function checkAnswer(user, correct){
+[...document.querySelectorAll(".option")].forEach(b=>{
+b.disabled = true;
+if(b.textContent === correct) b.classList.add("correct");
+if(b.textContent === user && user !== correct) b.classList.add("wrong");
+});
+if(user === correct) score++;
+setTimeout(()=>{
+current++;
+if(current < questions.length) showQuestion();
+else showResult();
+}, 600);
+}
+
+function showResult(){
+document.getElementById("question").textContent = "";
+document.getElementById("options").innerHTML = "";
+document.getElementById("result").textContent = `Hai risposto correttamente a ${score} di ${questions.length} domande!`;
+document.getElementById("again").style.display = "block";
+}
+
+/* ========= СЛОВАРЬ (ФЛЕШ-КАРТОЧКИ) ========= */
+function startVocab(list){
+vocabList = shuffle([...list]); // перемешаем слова при каждом запуске
+vocabIndex = 0; vocabFlipped = false;
+document.getElementById("subMenu").style.display = "none";
+document.getElementById("testArea").style.display = "none";
+document.getElementById("dictArea").style.display = "block";
+renderVocab();
+}
+
+function renderVocab(){
+const total = vocabList.length;
+document.getElementById("vocabProgress").textContent = `Parola ${vocabIndex+1} di ${total}`;
+const front = document.getElementById("vocabFront");
+const back = document.getElementById("vocabBack");
+front.textContent = vocabList[vocabIndex].it;
+back.textContent = vocabList[vocabIndex].ru;
+const card = document.getElementById("vocabCard");
+const inner = document.getElementById("vocabInner");
+// Сброс переворота
+card.classList.remove("flipped");
+// Клик по карточке тоже переворачивает
+card.onclick = flipVocab;
+// Обновим текст кнопки flip
+document.getElementById("flipBtn").textContent = vocabFlipped ? "Mostra parola" : "Mostra traduzione";
+}
+
+function flipVocab(){
+const card = document.getElementById("vocabCard");
+vocabFlipped = !vocabFlipped;
+if(vocabFlipped) card.classList.add("flipped");
+else card.classList.remove("flipped");
+document.getElementById("flipBtn").textContent = vocabFlipped ? "Mostra parola" : "Mostra traduzione";
+}
+
+function nextVocab(){
+vocabIndex = (vocabIndex + 1) % vocabList.length;
+vocabFlipped = false;
+renderVocab();
+}
+
+/* ========= ИНИЦИАЛИЗАЦИЯ КАТЕГОРИЙ ========= */
+const catDiv = document.getElementById("categories");
+Object.keys(tests).forEach(cat=>{
+const btn = document.createElement("button");
+btn.textContent = cat; /* Verbi, Preposizioni, Articoli, Vocabolario */
+btn.className = "category-btn";
+btn.onclick = ()=>selectCategory(cat);
+catDiv.appendChild(btn);
+});
+
+// Показать меню сразу при загрузке
+showMenu();
+</script>
+</body>
+</html>
