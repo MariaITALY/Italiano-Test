@@ -51,7 +51,7 @@ background: #4a90e2; color: #fff; font-weight: 600;
 #question { font-weight: 700; font-size: 1.1rem; margin-bottom: 15px; }
 #progress, #vocabProgress { margin-bottom: 12px; font-size: 0.95rem; color: #666; text-align: right; }
 
-/* Флеш-карточка для Vocabolario */
+/* Флеш-карточка для Dizionario */
 #dictArea { display: none; }
 .vocab-card {
 width: 100%; max-width: 520px; height: 180px;
@@ -263,8 +263,8 @@ const tests = {
 ]
 },
 
-/* ===== Новая категория: Vocabolario (флеш-карточки) ===== */
-"Vocabolario": {
+/* ===== Новая категория: Dizionario (флеш-карточки) ===== */
+"Dizionario": {
 "Scheda 1": [
 {it:"mela",ru:"яблоко"},{it:"pera",ru:"груша"},{it:"banana",ru:"банан"},{it:"arancia",ru:"апельсин"},{it:"mandarino",ru:"мандари́н"},
 {it:"limone",ru:"лимон"},{it:"uva",ru:"виноград"},{it:"ciliegia",ru:"вишня"},{it:"fragola",ru:"клубника"},{it:"pesca",ru:"персик"},
@@ -277,6 +277,20 @@ const tests = {
 {it:"bietola",ru:"свёкла"},{it:"ravanello",ru:"редис"},{it:"sedano",ru:"сельдерей"},{it:"asparago",ru:"спаржа"},{it:"carciofo",ru:"артишок"},
 {it:"fagiolo",ru:"фасоль"},{it:"pisello",ru:"горох"},{it:"lenticchia",ru:"чечевица"},{it:"ceci",ru:"нут"},{it:"mais",ru:"кукуруза"},
 {it:"rapa",ru:"репа"},{it:"funghi",ru:"грибы"},{it:"erba cipollina",ru:"лук зелёный"},{it:"prezzemolo",ru:"петрушка"},{it:"basilico",ru:"базилик"}
+],
+"Scheda 2": [
+{it:"sopra sopra a",ru:"на"},{it:"sotto sotto a",ru:"под"},{it:"dietro dietro a",ru:"позади"},{it:"davanti a",ru:"перед"},{it:"di fronte a",ru:"перед"},
+{it:"accanto a",ru:"рядом"},{it:"vicino a",ru:"около рядом"},{it:"lontano da",ru:"далеко"},{it:"durante",ru:"во время"},{it:"entro",ru:"в течение"},
+{it:"fra tra",ru:"между среди через"},{it:"fuori di",ru:"вне снаружи"},{it:"in fondo a",ru:"в конце в глубине"},{it:"avanti",ru:"вперед"},{it:"dritto",ru:"прямо"},
+{it:"girаre",ru:"поворачивать"},{it:"all`angolo",ru:"на углу"},{it:"prima di",ru:"перед (отъездом)"},{it:"a destra di",ru:"справа от"},{it:"attraverso",ru:"через"}
+],
+"Scheda 3 Verbi": [
+{it:"sedere",ru:"сидеть"},{it:"togliere",ru:"снимать убирать"},{it:"spegnere",ru:"гасить включать"},{it:"spendere",ru:"тратить"},{it:"uscire",ru:"выходить"},
+{it:"spingere",ru:"толкать"},{it:"vedere",ru:"видеть"},{it:"stare",ru:"находиться быть"},{it:"venire",ru:"приходить"},{it:"tacere",ru:"молчать"},
+{it:"vincere",ru:"побеждать"},{it:"tenere",ru:"держать"},{it:"vivere",ru:"жить"},{it:"volere",ru:"хотеть"},{it:"rimanere",ru:"оставаться"},
+{it:"perdere",ru:"терять"},{it:"risolvere",ru:"решать проблему вопрос"},{it:"piacere",ru:"нравиться"},{it:"rispondere",ru:"отвечать"},{it:"piangere",ru:"плакать"},
+{it:"potere",ru:"мочь"},{it:"rompere",ru:"ломать"},{it:"prendere",ru:"брать"},{it:"salire",ru:"подниматься"},{it:"prendere",ru:"брать"},
+{it:"produrre",ru:"производить"},{it:"sapere",ru:"знать уметь"},{it:"proporre",ru:"предлагать"},{it:"scegliere",ru:"выбирать"},{it:"ridere",ru:"смеяться"}
 ]
 }
 };
@@ -324,8 +338,8 @@ document.getElementById("subMenu").style.display = "block";
 
 /* ========= ЗАПУСК ВЫБРАННОЙ СХЕДЫ ========= */
 function selectCard(cat, card){
-if(cat === "Vocabolario"){
-startVocab(tests["Vocabolario"][card]);
+if(cat === "Dizionario"){
+startVocab(tests["Dizionario"][card]);
 return;
 }
 questions = tests[cat][card];
@@ -428,5 +442,4 @@ catDiv.appendChild(btn);
 showMenu();
 </script>
 </body>
-
 </html>
